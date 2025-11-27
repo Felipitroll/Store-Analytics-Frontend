@@ -1,12 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-
-export interface Store {
-    id: string;
-    name: string;
-    url: string;
-    syncStatus: 'PENDING' | 'SYNCING' | 'COMPLETED' | 'FAILED';
-    lastSyncAt: string | null;
-}
+import type { Store } from '../types/store.types';
 
 interface StoreContextType {
     stores: Store[];
@@ -16,6 +9,7 @@ interface StoreContextType {
     isLoading: boolean;
     deleteStore: (id: string) => Promise<void>;
     retrySync: (id: string) => Promise<void>;
+    updateStore: (id: string, data: Partial<Store> & { accessToken?: string }) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -84,8 +78,23 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const updateStore = async (id: string, data: Partial<Store> & { accessToken?: string }) => {
+        try {
+            const response = await fetch(`http://localhost:3000/stores/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) throw new Error('Failed to update store');
+            await fetchStores();
+        } catch (error) {
+            console.error('Failed to update store:', error);
+            throw error;
+        }
+    };
+
     return (
-        <StoreContext.Provider value={{ stores, selectedStore, selectStore, refreshStores: fetchStores, isLoading, deleteStore, retrySync }}>
+        <StoreContext.Provider value={{ stores, selectedStore, selectStore, refreshStores: fetchStores, isLoading, deleteStore, retrySync, updateStore }}>
             {children}
         </StoreContext.Provider>
     );

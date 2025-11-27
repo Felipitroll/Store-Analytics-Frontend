@@ -1,9 +1,14 @@
 import { useStore } from '../../context/StoreContext';
-import { Trash2, RefreshCw, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import type { Store } from '../../types/store.types';
+import { Trash2, RefreshCw, AlertCircle, CheckCircle2, Clock, Edit } from 'lucide-react';
+import { useState } from 'react';
+import { EditStoreModal } from './EditStoreModal';
+import { DateRangePicker } from '../common/DateRangePicker';
 import { clsx } from 'clsx';
 
 export const Stores = () => {
-    const { stores, deleteStore, retrySync, isLoading } = useStore();
+    const { stores, deleteStore, retrySync, updateStore, isLoading } = useStore();
+    const [editingStore, setEditingStore] = useState<Store | null>(null);
 
     if (isLoading) {
         return <div className="flex items-center justify-center h-64">Loading...</div>;
@@ -43,13 +48,14 @@ export const Stores = () => {
                                 <th className="px-6 py-4">URL</th>
                                 <th className="px-6 py-4">Status</th>
                                 <th className="px-6 py-4">Last Sync</th>
+                                <th className="px-6 py-4">Reference Period</th>
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
                             {stores.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                                    <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                                         No stores connected yet.
                                     </td>
                                 </tr>
@@ -72,6 +78,18 @@ export const Stores = () => {
                                         <td className="px-6 py-4 text-muted-foreground">
                                             {store.lastSyncAt ? new Date(store.lastSyncAt).toLocaleString() : '-'}
                                         </td>
+                                        <td className="px-6 py-4">
+                                            <DateRangePicker
+                                                value={{
+                                                    start: store.startDate ? new Date(store.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                                                    end: store.endDate ? new Date(store.endDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+                                                }}
+                                                onChange={(range) => updateStore(store.id, {
+                                                    startDate: range.start,
+                                                    endDate: range.end
+                                                })}
+                                            />
+                                        </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
@@ -80,6 +98,13 @@ export const Stores = () => {
                                                     title="Retry Sync"
                                                 >
                                                     <RefreshCw size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditingStore(store)}
+                                                    className="p-2 hover:bg-yellow-500/10 text-yellow-600 rounded-md transition-colors"
+                                                    title="Edit Store"
+                                                >
+                                                    <Edit size={18} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(store.id)}
@@ -97,6 +122,15 @@ export const Stores = () => {
                     </table>
                 </div>
             </div>
+
+            {editingStore && (
+                <EditStoreModal
+                    store={editingStore}
+                    isOpen={!!editingStore}
+                    onClose={() => setEditingStore(null)}
+                    onSave={updateStore}
+                />
+            )}
         </div>
     );
 };
