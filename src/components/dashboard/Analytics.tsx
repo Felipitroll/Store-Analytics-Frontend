@@ -183,39 +183,18 @@ export const Analytics = () => {
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={data?.salesOverTime ?? []}>
                                         <defs>
-                                            {/* Original Primary Gradient (Vertical Fade) */}
                                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
                                                 <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                                             </linearGradient>
 
-                                            {/* Blue Gradient for Reference Period (Vertical Fade) */}
-                                            <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.4} />
-                                                <stop offset="95%" stopColor="#38bdf8" stopOpacity={0} />
-                                            </linearGradient>
-
                                             {/* Stroke Gradient (Horizontal Switch) */}
                                             <linearGradient id="strokeGradient" x1="0" y1="0" x2="1" y2="0">
                                                 <stop offset={`${(gradientInfo.start * 100)}%`} stopColor="hsl(var(--primary))" />
-                                                <stop offset={`${(gradientInfo.start * 100)}%`} stopColor="#38bdf8" />
-                                                <stop offset={`${(gradientInfo.end * 100)}%`} stopColor="#38bdf8" />
+                                                <stop offset={`${(gradientInfo.start * 100)}%`} stopColor="#0d4a2d" />
+                                                <stop offset={`${(gradientInfo.end * 100)}%`} stopColor="#0d4a2d" />
                                                 <stop offset={`${(gradientInfo.end * 100)}%`} stopColor="hsl(var(--primary))" />
                                             </linearGradient>
-
-                                            {/* Mask to show Blue Gradient only in reference period */}
-                                            <mask id="highlightMask" x="0" y="0" width="100%" height="100%">
-                                                {/* Everything black (hidden) by default */}
-                                                <rect x="0" y="0" width="100%" height="100%" fill="black" />
-                                                {/* White rect (visible) for the reference period */}
-                                                <rect
-                                                    x={`${gradientInfo.start * 100}%`}
-                                                    y="0"
-                                                    width={`${(gradientInfo.end - gradientInfo.start) * 100}%`}
-                                                    height="100%"
-                                                    fill="white"
-                                                />
-                                            </mask>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                                         <XAxis
@@ -232,7 +211,7 @@ export const Analytics = () => {
                                             itemStyle={{ color: 'hsl(var(--foreground))' }}
                                         />
 
-                                        {/* Main Area (Primary Color) */}
+                                        {/* Main Area (Primary Color with Gradient Stroke) */}
                                         <Area
                                             type="monotone"
                                             dataKey="value"
@@ -240,17 +219,6 @@ export const Analytics = () => {
                                             strokeWidth={3}
                                             fillOpacity={1}
                                             fill="url(#colorValue)"
-                                            isAnimationActive={false}
-                                        />
-
-                                        {/* Highlight Area (Blue Color, Masked) */}
-                                        <Area
-                                            type="monotone"
-                                            dataKey="value"
-                                            stroke="none"
-                                            fillOpacity={1}
-                                            fill="url(#blueGradient)"
-                                            mask="url(#highlightMask)"
                                             isAnimationActive={false}
                                         />
 
