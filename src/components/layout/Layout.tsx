@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Users, BarChart3, Settings, Plus } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, ShoppingBag, Users, BarChart3, Settings, Plus, LogOut } from 'lucide-react';
 import { clsx } from 'clsx';
 import { StoreManager } from '../store/StoreManager';
 
@@ -23,11 +23,19 @@ import { StoreProvider } from '../../context/StoreContext';
 import { StoreSelector } from '../store/StoreSelector';
 import { DateRangePicker } from '../common/DateRangePicker';
 import { useDateRange } from '../../context/DateRangeContext';
+import { useAuth } from '../../context/AuthContext';
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [isStoreManagerOpen, setIsStoreManagerOpen] = useState(false);
     const { dateRange, setDateRange } = useDateRange();
+    const { logout, user } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
         <StoreProvider>
@@ -76,6 +84,19 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                                 <Plus size={16} />
                                 Add Store
                             </button>
+                            <div className="flex items-center gap-3 px-4 py-2 border border-border rounded-md bg-card/50">
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-muted-foreground">Logged in as</span>
+                                    <span className="text-sm font-medium">{user?.email}</span>
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors"
+                                    title="Logout"
+                                >
+                                    <LogOut size={18} />
+                                </button>
+                            </div>
                         </div>
                     </header>
                     <div className="p-8 max-w-7xl mx-auto">
