@@ -17,18 +17,29 @@ interface AnalyticsData {
         totalSessionsChange: number | null;
         conversionRateChange: number | null;
     } | null;
+    benchmark: {
+        totalRevenueChange: number | null;
+        totalOrdersChange: number | null;
+        averageOrderValueChange: number | null;
+        totalSessionsChange: number | null;
+        conversionRateChange: number | null;
+    } | null;
     salesOverTime: { name: string; value: number }[];
     topProducts: { id: string; title: string; totalSales: number }[];
 }
 
 
-const MetricCard = ({ title, value, change, comparisonLabel, icon: Icon }: any) => {
-    const isNeutral = change === null || Math.abs(change) < 0.1;
-    const isPositive = change !== null && change > 0;
+const MetricCard = ({ title, value, change, benchmarkChange, comparisonLabel, icon: Icon }: any) => {
+    const isNeutral = change == null || Math.abs(change) < 0.1;
+    const isPositive = change != null && change > 0;
     const colorClass = isNeutral ? 'text-foreground/70' : (isPositive ? 'text-green-500' : 'text-red-500');
 
+    const isBNeutral = benchmarkChange == null || Math.abs(benchmarkChange) < 0.1;
+    const isBPositive = benchmarkChange != null && benchmarkChange > 0;
+    const bColorClass = isBNeutral ? 'text-foreground/40' : (isBPositive ? 'text-green-500/80' : 'text-red-500/80');
+
     return (
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
                 <span className="text-muted-foreground text-sm font-medium">{title}</span>
                 <div className="p-2 bg-primary/10 rounded-lg">
@@ -36,8 +47,15 @@ const MetricCard = ({ title, value, change, comparisonLabel, icon: Icon }: any) 
                 </div>
             </div>
             <div className="flex items-end justify-between">
-                <div>
-                    <h3 className="text-2xl font-bold text-foreground">{value}</h3>
+                <div className="w-full">
+                    <div className="flex items-baseline justify-between w-full">
+                        <h3 className="text-2xl font-bold text-foreground">{value}</h3>
+                        {benchmarkChange != null && (
+                            <span className={`text-sm font-bold ${bColorClass}`}>
+                                {benchmarkChange > 0 ? '+' : ''}{parseFloat(benchmarkChange.toString()).toFixed(1)}%
+                            </span>
+                        )}
+                    </div>
                     {change != null && (
                         <div className={`flex items-center gap-1 mt-1 text-sm ${colorClass} font-medium`}>
                             {change > 0 ? <TrendingUp size={14} /> : <TrendingUp size={14} className="rotate-180" />}
@@ -53,7 +71,7 @@ const MetricCard = ({ title, value, change, comparisonLabel, icon: Icon }: any) 
 
 export const Analytics = () => {
     const { selectedStore, isLoading: isStoreLoading } = useStore();
-    const { dateRange, comparisonPeriod, setComparisonPeriod } = useDateRange();
+    const { dateRange, comparisonPeriod, setComparisonPeriod, benchmarkPeriod, setBenchmarkPeriod } = useDateRange();
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -68,7 +86,8 @@ export const Analytics = () => {
                 const queryParams = new URLSearchParams({
                     startDate: dateRange.start,
                     endDate: dateRange.end,
-                    comparisonPeriod: comparisonPeriod
+                    comparisonPeriod: comparisonPeriod,
+                    benchmarkPeriod: benchmarkPeriod
                 });
 
                 // Fetch analytics data
@@ -88,7 +107,7 @@ export const Analytics = () => {
         };
 
         fetchAnalytics();
-    }, [selectedStore, dateRange, comparisonPeriod]);
+    }, [selectedStore, dateRange, comparisonPeriod, benchmarkPeriod]);
 
     if (isStoreLoading) {
         return <div className="flex items-center justify-center h-64">Loading analytics...</div>;
@@ -151,18 +170,34 @@ export const Analytics = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 className="text-3xl font-bold tracking-tight">Analytics: {selectedStore.name}</h1>
 
-                <div className="flex items-center gap-3 bg-card border border-border p-1 rounded-lg">
-                    <span className="text-xs font-medium text-muted-foreground px-2">Compare with:</span>
-                    <select
-                        value={comparisonPeriod}
-                        onChange={(e) => setComparisonPeriod(e.target.value as any)}
-                        className="bg-transparent text-sm font-medium focus:outline-none pr-2"
-                    >
-                        <option value="none">None</option>
-                        <option value="previous_period">Previous Period</option>
-                        <option value="last_month">Last Month</option>
-                        <option value="last_year">Last Year</option>
-                    </select>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 bg-card border border-border p-1 rounded-lg">
+                        <span className="text-xs font-medium text-muted-foreground px-2 whitespace-nowrap">Benchmark:</span>
+                        <select
+                            value={benchmarkPeriod}
+                            onChange={(e) => setBenchmarkPeriod(e.target.value as any)}
+                            className="bg-transparent text-sm font-medium focus:outline-none pr-2"
+                        >
+                            <option value="ref">Ref. Period</option>
+                            <option value="ref_1">1 Mo Before</option>
+                            <option value="ref_2">2 Mo Before</option>
+                            <option value="ref_3">3 Mo Before</option>
+                        </select>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-card border border-border p-1 rounded-lg">
+                        <span className="text-xs font-medium text-muted-foreground px-2 whitespace-nowrap">Compare with:</span>
+                        <select
+                            value={comparisonPeriod}
+                            onChange={(e) => setComparisonPeriod(e.target.value as any)}
+                            className="bg-transparent text-sm font-medium focus:outline-none pr-2"
+                        >
+                            <option value="none">None</option>
+                            <option value="previous_period">Previous Period</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="last_year">Last Year</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -182,6 +217,7 @@ export const Analytics = () => {
                             title="Total Revenue"
                             value={`$${(data?.totalRevenue ?? 0).toLocaleString()}`}
                             change={data?.comparison?.totalRevenueChange}
+                            benchmarkChange={data?.benchmark?.totalRevenueChange}
                             comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
                             icon={DollarSign}
                         />
@@ -189,6 +225,7 @@ export const Analytics = () => {
                             title="Total Orders"
                             value={(data?.totalOrders ?? 0).toLocaleString()}
                             change={data?.comparison?.totalOrdersChange}
+                            benchmarkChange={data?.benchmark?.totalOrdersChange}
                             comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
                             icon={ShoppingCart}
                         />
@@ -196,6 +233,7 @@ export const Analytics = () => {
                             title="Average Order Value"
                             value={`$${(data?.averageOrderValue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                             change={data?.comparison?.averageOrderValueChange}
+                            benchmarkChange={data?.benchmark?.averageOrderValueChange}
                             comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
                             icon={DollarSign}
                         />
@@ -203,6 +241,7 @@ export const Analytics = () => {
                             title="Total Sessions"
                             value={(data?.totalSessions ?? 0).toLocaleString()}
                             change={data?.comparison?.totalSessionsChange}
+                            benchmarkChange={data?.benchmark?.totalSessionsChange}
                             comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
                             icon={Activity}
                         />
@@ -210,6 +249,7 @@ export const Analytics = () => {
                             title="Conversion Rate"
                             value={`${(data?.conversionRate ?? 0).toFixed(2)}%`}
                             change={data?.comparison?.conversionRateChange}
+                            benchmarkChange={data?.benchmark?.conversionRateChange}
                             comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
                             icon={Target}
                         />
