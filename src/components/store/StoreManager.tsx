@@ -12,6 +12,8 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
     const [accessToken, setAccessToken] = useState('');
     const [name, setName] = useState('');
     const [tags, setTags] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState(false);
     const { refreshStores } = useStore();
 
@@ -30,7 +32,14 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
             const response = await fetch('http://localhost:3000/stores', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: cleanUrl, accessToken, name, tags: tagsArray }),
+                body: JSON.stringify({
+                    url: cleanUrl,
+                    accessToken,
+                    name,
+                    tags: tagsArray,
+                    startDate,
+                    endDate
+                }),
             });
 
             if (!response.ok) {
@@ -49,6 +58,8 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
             setAccessToken('');
             setName('');
             setTags('');
+            setStartDate('');
+            setEndDate('');
         } catch (error: any) {
             console.error(error);
             alert(`Error: ${error.message}`);
@@ -119,6 +130,29 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
                         <p className="text-xs text-muted-foreground">
                             Separate tags with commas.
                         </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Reference Start Date</label>
+                            <input
+                                type="date"
+                                required
+                                className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Reference End Date</label>
+                            <input
+                                type="date"
+                                required
+                                className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <div className="pt-4 flex justify-end gap-3">
