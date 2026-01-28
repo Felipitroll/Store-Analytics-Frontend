@@ -329,11 +329,11 @@ export const Analytics = () => {
                         </div>
 
                         {/* Top Products */}
-                        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col min-h-[400px]">
                             <h3 className="text-lg font-semibold mb-6">Top Products</h3>
-                            <div className="space-y-3">
-                                {(!data?.topProducts || data.topProducts.length === 0) ? (
-                                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+                                {(!data?.topProducts || data.topProducts.filter(p => p.totalSales > 0).length === 0) ? (
+                                    <div className="h-full flex flex-col items-center justify-center py-8 text-center bg-secondary/10 rounded-xl border border-dashed border-border">
                                         <div className="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mb-3">
                                             <ShoppingCart className="w-8 h-8 text-muted-foreground" />
                                         </div>
@@ -341,47 +341,49 @@ export const Analytics = () => {
                                         <p className="text-xs text-muted-foreground mt-1">Try selecting a different date range</p>
                                     </div>
                                 ) : (
-                                    data.topProducts.map((product, index) => {
-                                        const maxSales = data.topProducts[0]?.totalSales || 1;
-                                        const percentage = (product.totalSales / maxSales) * 100;
-                                        const rankColors = ['bg-yellow-500', 'bg-gray-400', 'bg-orange-600'];
-                                        const rankColor = rankColors[index] || 'bg-primary';
+                                    data.topProducts
+                                        .filter(product => product.totalSales > 0)
+                                        .map((product, index) => {
+                                            const maxSales = data.topProducts[0]?.totalSales || 1;
+                                            const percentage = (product.totalSales / maxSales) * 100;
+                                            const rankColors = ['bg-yellow-500', 'bg-gray-400', 'bg-orange-600'];
+                                            const rankColor = rankColors[index] || 'bg-primary';
 
-                                        return (
-                                            <div key={product.id} className="relative group">
-                                                <div className="flex items-center gap-3 p-3 hover:bg-secondary/30 rounded-lg transition-all cursor-pointer">
-                                                    {/* Rank Badge */}
-                                                    <div className={`w-6 h-6 ${rankColor} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
-                                                        {index + 1}
-                                                    </div>
+                                            return (
+                                                <div key={product.id} className="relative group">
+                                                    <div className="flex items-center gap-3 p-3 hover:bg-secondary/30 rounded-lg transition-all cursor-pointer">
+                                                        {/* Rank Badge */}
+                                                        <div className={`w-6 h-6 ${rankColor} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                                                            {index + 1}
+                                                        </div>
 
-                                                    {/* Product Info */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-medium text-sm truncate" title={product.title}>
-                                                            {product.title}
-                                                        </p>
-                                                        {/* Progress Bar */}
-                                                        <div className="mt-1.5 h-1.5 bg-secondary rounded-full overflow-hidden">
-                                                            <div
-                                                                className="h-full bg-primary transition-all duration-500 rounded-full"
-                                                                style={{ width: `${percentage}%` }}
-                                                            />
+                                                        {/* Product Info */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-medium text-sm truncate" title={product.title}>
+                                                                {product.title}
+                                                            </p>
+                                                            {/* Progress Bar */}
+                                                            <div className="mt-1.5 h-1.5 bg-secondary rounded-full overflow-hidden">
+                                                                <div
+                                                                    className="h-full bg-primary transition-all duration-500 rounded-full"
+                                                                    style={{ width: `${percentage}%` }}
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Sales Amount */}
+                                                        <div className="text-right flex-shrink-0">
+                                                            <p className="font-semibold text-sm">
+                                                                ${product.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {percentage.toFixed(0)}%
+                                                            </p>
                                                         </div>
                                                     </div>
-
-                                                    {/* Sales Amount */}
-                                                    <div className="text-right flex-shrink-0">
-                                                        <p className="font-semibold text-sm">
-                                                            ${product.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {percentage.toFixed(0)}%
-                                                        </p>
-                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })
+                                            );
+                                        })
                                 )}
                             </div>
                         </div>
