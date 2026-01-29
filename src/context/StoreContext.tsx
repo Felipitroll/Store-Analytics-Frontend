@@ -8,7 +8,7 @@ interface StoreContextType {
     refreshStores: () => Promise<void>;
     isLoading: boolean;
     deleteStore: (id: string) => Promise<void>;
-    retrySync: (id: string) => Promise<void>;
+    retrySync: (id: string, force?: boolean) => Promise<void>;
     updateStore: (id: string, data: Partial<Store> & { accessToken?: string }) => Promise<void>;
 }
 
@@ -73,9 +73,9 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const retrySync = async (id: string) => {
+    const retrySync = async (id: string, force: boolean = false) => {
         try {
-            const response = await fetch(`http://localhost:3000/stores/${id}/sync`, { method: 'POST' });
+            const response = await fetch(`http://localhost:3000/stores/${id}/sync${force ? '?force=true' : ''}`, { method: 'POST' });
             const data = await response.json();
 
             if (!data.success) {

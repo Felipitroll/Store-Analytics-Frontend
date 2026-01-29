@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { CheckCircle2, RefreshCw, AlertCircle, Clock } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export const StoreSelector = () => {
-    const { stores, selectedStore, selectStore, refreshStores } = useStore();
+    const { stores, selectedStore, selectStore, refreshStores, retrySync } = useStore();
 
     // Poll for status updates if current store is syncing
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: any;
         if (selectedStore?.syncStatus === 'SYNCING') {
             interval = setInterval(() => {
                 refreshStores();
@@ -16,6 +16,12 @@ export const StoreSelector = () => {
         }
         return () => clearInterval(interval);
     }, [selectedStore?.syncStatus, refreshStores]);
+
+    const handleManualSync = async () => {
+        if (selectedStore) {
+            await retrySync(selectedStore.id, true);
+        }
+    };
 
     if (stores.length === 0) {
         return (
@@ -61,15 +67,27 @@ export const StoreSelector = () => {
             </div>
 
             {selectedStore && (
-                <div className={clsx(
-                    "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border",
-                    selectedStore.syncStatus === 'COMPLETED' && "bg-green-500/10 border-green-500/20 text-green-700",
-                    selectedStore.syncStatus === 'SYNCING' && "bg-blue-500/10 border-blue-500/20 text-blue-700",
-                    selectedStore.syncStatus === 'FAILED' && "bg-red-500/10 border-red-500/20 text-red-700",
-                    selectedStore.syncStatus === 'PENDING' && "bg-gray-500/10 border-gray-500/20 text-gray-700",
-                )}>
-                    {getStatusIcon(selectedStore.syncStatus)}
-                    <span>{getStatusText(selectedStore.syncStatus)}</span>
+                <div className="flex items-center gap-2">
+                    <div className={clsx(
+                        "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border whitespace-nowrap",
+                        selectedStore.syncStatus === 'COMPLETED' && "bg-green-500/10 border-green-500/20 text-green-700",
+                        selectedStore.syncStatus === 'SYNCING' && "bg-blue-500/10 border-blue-500/20 text-blue-700",
+                        selectedStore.syncStatus === 'FAILED' && "bg-red-500/10 border-red-500/20 text-red-700",
+                        selectedStore.syncStatus === 'PENDING' && "bg-gray-500/10 border-gray-500/20 text-gray-700",
+                    )}>
+                        {getStatusIcon(selectedStore.syncStatus)}
+                        <span>{getStatusText(selectedStore.syncStatus)}</span>
+                    </div>
+
+                    {selectedStore.syncStatus !== 'SYNCING' && (
+                        <button
+                            onClick={handleManualSync}
+                            className="p-1 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-all"
+                            title="Force full re-sync (fixes missing product data)"
+                        >
+                            <RefreshCw size={14} />
+                        </button>
+                    )}
                 </div>
             )}
         </div>

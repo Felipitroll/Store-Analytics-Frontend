@@ -17,26 +17,15 @@ interface AnalyticsData {
         totalSessionsChange: number | null;
         conversionRateChange: number | null;
     } | null;
-    benchmark: {
-        totalRevenueChange: number | null;
-        totalOrdersChange: number | null;
-        averageOrderValueChange: number | null;
-        totalSessionsChange: number | null;
-        conversionRateChange: number | null;
-    } | null;
     salesOverTime: { name: string; value: number }[];
     topProducts: { id: string; title: string; totalSales: number }[];
 }
 
 
-const MetricCard = ({ title, value, change, benchmarkChange, comparisonLabel, icon: Icon }: any) => {
+const MetricCard = ({ title, value, change, comparisonLabel, icon: Icon }: any) => {
     const isNeutral = change == null || Math.abs(change) < 0.1;
     const isPositive = change != null && change > 0;
     const colorClass = isNeutral ? 'text-foreground/70' : (isPositive ? 'text-green-500' : 'text-red-500');
-
-    const isBNeutral = benchmarkChange == null || Math.abs(benchmarkChange) < 0.1;
-    const isBPositive = benchmarkChange != null && benchmarkChange > 0;
-    const bColorClass = isBNeutral ? 'text-foreground/40' : (isBPositive ? 'text-green-500/80' : 'text-red-500/80');
 
     return (
         <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
@@ -50,11 +39,6 @@ const MetricCard = ({ title, value, change, benchmarkChange, comparisonLabel, ic
                 <div className="w-full">
                     <div className="flex items-baseline justify-between w-full">
                         <h3 className="text-2xl font-bold text-foreground">{value}</h3>
-                        {benchmarkChange != null && (
-                            <span className={`text-sm font-bold ${bColorClass}`}>
-                                {benchmarkChange > 0 ? '+' : ''}{parseFloat(benchmarkChange.toString()).toFixed(1)}%
-                            </span>
-                        )}
                     </div>
                     {change != null && (
                         <div className={`flex items-center gap-1 mt-1 text-sm ${colorClass} font-medium`}>
@@ -71,7 +55,7 @@ const MetricCard = ({ title, value, change, benchmarkChange, comparisonLabel, ic
 
 export const Analytics = () => {
     const { selectedStore, isLoading: isStoreLoading } = useStore();
-    const { dateRange, comparisonPeriod, setComparisonPeriod, benchmarkPeriod, setBenchmarkPeriod } = useDateRange();
+    const { dateRange, comparisonPeriod, setComparisonPeriod } = useDateRange();
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -87,7 +71,6 @@ export const Analytics = () => {
                     startDate: dateRange.start,
                     endDate: dateRange.end,
                     comparisonPeriod: comparisonPeriod,
-                    benchmarkPeriod: benchmarkPeriod
                 });
 
                 // Fetch analytics data
@@ -107,7 +90,7 @@ export const Analytics = () => {
         };
 
         fetchAnalytics();
-    }, [selectedStore, dateRange, comparisonPeriod, benchmarkPeriod]);
+    }, [selectedStore, dateRange, comparisonPeriod]);
 
     if (isStoreLoading) {
         return <div className="flex items-center justify-center h-64">Loading analytics...</div>;
@@ -172,20 +155,6 @@ export const Analytics = () => {
 
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 bg-card border border-border p-1 rounded-lg">
-                        <span className="text-xs font-medium text-muted-foreground px-2 whitespace-nowrap">Benchmark:</span>
-                        <select
-                            value={benchmarkPeriod}
-                            onChange={(e) => setBenchmarkPeriod(e.target.value as any)}
-                            className="bg-transparent text-sm font-medium focus:outline-none pr-2 cursor-pointer"
-                        >
-                            <option value="ref" className="bg-slate-900">Ref. Period</option>
-                            <option value="ref_1" className="bg-slate-900">1 Mo Before</option>
-                            <option value="ref_2" className="bg-slate-900">2 Mo Before</option>
-                            <option value="ref_3" className="bg-slate-900">3 Mo Before</option>
-                        </select>
-                    </div>
-
-                    <div className="flex items-center gap-2 bg-card border border-border p-1 rounded-lg">
                         <span className="text-xs font-medium text-muted-foreground px-2 whitespace-nowrap">Compare with:</span>
                         <select
                             value={comparisonPeriod}
@@ -193,9 +162,7 @@ export const Analytics = () => {
                             className="bg-transparent text-sm font-medium focus:outline-none pr-2 cursor-pointer"
                         >
                             <option value="none" className="bg-slate-900">None</option>
-                            <option value="previous_period" className="bg-slate-900">Previous Period</option>
-                            <option value="last_month" className="bg-slate-900">Last Month</option>
-                            <option value="last_year" className="bg-slate-900">Last Year</option>
+                            <option value="previous_period" className="bg-slate-900">Last Period</option>
                         </select>
                     </div>
                 </div>
@@ -217,40 +184,35 @@ export const Analytics = () => {
                             title="Total Revenue"
                             value={`$${(data?.totalRevenue ?? 0).toLocaleString()}`}
                             change={data?.comparison?.totalRevenueChange}
-                            benchmarkChange={data?.benchmark?.totalRevenueChange}
-                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
+                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'last period' : ''}
                             icon={DollarSign}
                         />
                         <MetricCard
                             title="Total Orders"
                             value={(data?.totalOrders ?? 0).toLocaleString()}
                             change={data?.comparison?.totalOrdersChange}
-                            benchmarkChange={data?.benchmark?.totalOrdersChange}
-                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
+                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'last period' : ''}
                             icon={ShoppingCart}
                         />
                         <MetricCard
                             title="Average Order Value"
                             value={`$${(data?.averageOrderValue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                             change={data?.comparison?.averageOrderValueChange}
-                            benchmarkChange={data?.benchmark?.averageOrderValueChange}
-                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
+                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'last period' : ''}
                             icon={DollarSign}
                         />
                         <MetricCard
                             title="Total Sessions"
                             value={(data?.totalSessions ?? 0).toLocaleString()}
                             change={data?.comparison?.totalSessionsChange}
-                            benchmarkChange={data?.benchmark?.totalSessionsChange}
-                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
+                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'last period' : ''}
                             icon={Activity}
                         />
                         <MetricCard
                             title="Conversion Rate"
-                            value={`${(data?.conversionRate ?? 0).toFixed(2)}%`}
+                            value={`${((data?.conversionRate ?? 0) * 100).toFixed(2)}%`}
                             change={data?.comparison?.conversionRateChange}
-                            benchmarkChange={data?.benchmark?.conversionRateChange}
-                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'prev. period' : comparisonPeriod.replace('_', ' ')}
+                            comparisonLabel={comparisonPeriod === 'previous_period' ? 'last period' : ''}
                             icon={Target}
                         />
                     </div>
@@ -288,8 +250,16 @@ export const Analytics = () => {
                                         />
                                         <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
                                         <Tooltip
-                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                                            itemStyle={{ color: 'hsl(var(--foreground))' }}
+                                            formatter={(value: number) => [`$${value.toLocaleString()}`, 'Ingresos']}
+                                            labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px', fontWeight: 'bold' }}
+                                            contentStyle={{
+                                                backgroundColor: 'hsl(var(--card))',
+                                                borderColor: 'hsl(var(--border))',
+                                                borderRadius: '12px',
+                                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                                border: '1px solid hsl(var(--border))'
+                                            }}
+                                            itemStyle={{ color: 'hsl(var(--primary))', fontWeight: 'bold', fontSize: '14px' }}
                                         />
 
                                         {/* Main Area (Primary Color with Gradient Stroke) */}

@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Users, BarChart3, Settings, Plus, LogOut } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Users, BarChart3, Settings, Plus, LogOut, Calendar } from 'lucide-react';
 import { clsx } from 'clsx';
 import { StoreManager } from '../store/StoreManager';
+import { StoreProvider } from '../../context/StoreContext';
+import { StoreSelector } from '../store/StoreSelector';
+import { DateRangePicker } from '../common/DateRangePicker';
+import { useDateRange } from '../../context/DateRangeContext';
+import { useAuth } from '../../context/AuthContext';
+import { useStore } from '../../context/StoreContext';
 
 const SidebarItem = ({ icon: Icon, label, to, active }: { icon: any, label: string, to: string, active: boolean }) => (
     <Link
@@ -19,22 +25,26 @@ const SidebarItem = ({ icon: Icon, label, to, active }: { icon: any, label: stri
     </Link>
 );
 
-import { StoreProvider } from '../../context/StoreContext';
-import { StoreSelector } from '../store/StoreSelector';
-import { DateRangePicker } from '../common/DateRangePicker';
-import { useDateRange } from '../../context/DateRangeContext';
-import { useAuth } from '../../context/AuthContext';
-
 export const Layout = ({ children }: { children: React.ReactNode }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isStoreManagerOpen, setIsStoreManagerOpen] = useState(false);
     const { dateRange, setDateRange } = useDateRange();
     const { logout, user } = useAuth();
+    const { selectedStore } = useStore();
 
     const handleLogout = () => {
         logout();
         navigate('/login');
+    };
+
+    const setRefPeriod = () => {
+        if (selectedStore?.startDate && selectedStore?.endDate) {
+            setDateRange({
+                start: selectedStore.startDate.split('T')[0],
+                end: selectedStore.endDate.split('T')[0]
+            });
+        }
     };
 
     return (
@@ -76,6 +86,16 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                             <StoreSelector />
                         </div>
                         <div className="flex items-center gap-4">
+                            {selectedStore?.startDate && selectedStore?.endDate && (
+                                <button
+                                    onClick={setRefPeriod}
+                                    className="flex items-center gap-2 px-3 py-2 border border-border rounded-md hover:bg-secondary/50 transition-colors text-xs font-medium text-muted-foreground"
+                                    title="Set Reference Period"
+                                >
+                                    <Calendar size={14} />
+                                    <span>Program Period</span>
+                                </button>
+                            )}
                             <DateRangePicker value={dateRange} onChange={setDateRange} />
                             <button
                                 onClick={() => setIsStoreManagerOpen(true)}
