@@ -22,13 +22,13 @@ interface AnalyticsData {
 }
 
 
-const MetricCard = ({ title, value, change, comparisonLabel, icon: Icon }: any) => {
+const MetricCard = ({ title, value, change, comparisonLabel, icon: Icon, id }: any) => {
     const isNeutral = change == null || Math.abs(change) < 0.1;
     const isPositive = change != null && change > 0;
     const colorClass = isNeutral ? 'text-foreground/70' : (isPositive ? 'text-green-500' : 'text-red-500');
 
     return (
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+        <div id={id} className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
                 <span className="text-muted-foreground text-sm font-medium">{title}</span>
                 <div className="p-2 bg-primary/10 rounded-lg">
@@ -150,14 +150,15 @@ export const Analytics = () => {
 
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div id="analytics-container" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h1 className="text-3xl font-bold tracking-tight">Analytics: {selectedStore.name}</h1>
+                <h1 id="analytics-title" className="text-3xl font-bold tracking-tight">Analytics: {selectedStore.name}</h1>
 
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 bg-card border border-border p-1 rounded-lg">
+                    <div id="comparison-selector-container" className="flex items-center gap-2 bg-card border border-border p-1 rounded-lg">
                         <span className="text-xs font-medium text-muted-foreground px-2 whitespace-nowrap">Compare with:</span>
                         <select
+                            id="select-comparison-period"
                             value={comparisonPeriod}
                             onChange={(e) => setComparisonPeriod(e.target.value as any)}
                             className="bg-transparent text-sm font-medium focus:outline-none pr-2 cursor-pointer"
@@ -170,18 +171,19 @@ export const Analytics = () => {
             </div>
 
             {isLoading && (
-                <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 rounded-xl">
+                <div id="analytics-loading-overlay" className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 rounded-xl">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
             )}
 
             {error ? (
-                <div className="flex items-center justify-center h-64 text-red-500">{error}</div>
+                <div id="analytics-error-display" className="flex items-center justify-center h-64 text-red-500">{error}</div>
             ) : (
                 <>
                     {/* Metrics Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <div id="analytics-metrics-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                         <MetricCard
+                            id="analytics-metric-revenue"
                             title="Total Revenue"
                             value={`$${(data?.totalRevenue ?? 0).toLocaleString()}`}
                             change={data?.comparison?.totalRevenueChange}
@@ -189,6 +191,7 @@ export const Analytics = () => {
                             icon={DollarSign}
                         />
                         <MetricCard
+                            id="analytics-metric-orders"
                             title="Total Orders"
                             value={(data?.totalOrders ?? 0).toLocaleString()}
                             change={data?.comparison?.totalOrdersChange}
@@ -196,6 +199,7 @@ export const Analytics = () => {
                             icon={ShoppingCart}
                         />
                         <MetricCard
+                            id="analytics-metric-aov"
                             title="Average Order Value"
                             value={`$${(data?.averageOrderValue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                             change={data?.comparison?.averageOrderValueChange}
@@ -203,6 +207,7 @@ export const Analytics = () => {
                             icon={DollarSign}
                         />
                         <MetricCard
+                            id="analytics-metric-sessions"
                             title="Total Sessions"
                             value={(data?.totalSessions ?? 0).toLocaleString()}
                             change={data?.comparison?.totalSessionsChange}
@@ -210,6 +215,7 @@ export const Analytics = () => {
                             icon={Activity}
                         />
                         <MetricCard
+                            id="analytics-metric-conversion"
                             title="Conversion Rate"
                             value={`${(Math.floor((data?.conversionRate ?? 0) * 10) / 10).toFixed(1)}%`}
                             change={data?.comparison?.conversionRateChange}
@@ -219,13 +225,16 @@ export const Analytics = () => {
                     </div>
 
                     {/* Charts Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div id="analytics-charts-grid" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Main Chart */}
-                        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <div id="analytics-revenue-chart-container" className="lg:col-span-2 bg-card border border-border rounded-xl p-6 shadow-sm">
                             <h3 className="text-lg font-semibold mb-6">Revenue Overview</h3>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={data?.salesOverTime ?? []}>
+                                    <AreaChart 
+                                        id="revenue-area-chart"
+                                        data={data?.salesOverTime ?? []}
+                                    >
                                         <defs>
                                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -321,21 +330,22 @@ export const Analytics = () => {
                                             const rankColor = rankColors[index] || 'bg-primary';
 
                                             return (
-                                                <div key={product.id} className="relative group">
+                                                <div id={`top-product-item-${product.id}`} key={product.id} className="relative group">
                                                     <div className="flex items-center gap-3 p-3 hover:bg-secondary/30 rounded-lg transition-all cursor-pointer">
                                                         {/* Rank Badge */}
-                                                        <div className={`w-6 h-6 ${rankColor} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                                                        <div id={`top-product-rank-${index + 1}`} className={`w-6 h-6 ${rankColor} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
                                                             {index + 1}
                                                         </div>
 
                                                         {/* Product Info */}
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-medium text-sm truncate" title={product.title}>
+                                                            <p id={`top-product-title-${product.id}`} className="font-medium text-sm truncate" title={product.title}>
                                                                 {product.title}
                                                             </p>
                                                             {/* Progress Bar */}
                                                             <div className="mt-1.5 h-1.5 bg-secondary rounded-full overflow-hidden">
                                                                 <div
+                                                                    id={`top-product-progress-${product.id}`}
                                                                     className="h-full bg-primary transition-all duration-500 rounded-full"
                                                                     style={{ width: `${percentage}%` }}
                                                                 />
@@ -343,7 +353,7 @@ export const Analytics = () => {
                                                         </div>
 
                                                         {/* Sales Amount */}
-                                                        <div className="text-right flex-shrink-0">
+                                                        <div id={`top-product-sales-${product.id}`} className="text-right flex-shrink-0">
                                                             <p className="font-semibold text-sm">
                                                                 ${product.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                             </p>

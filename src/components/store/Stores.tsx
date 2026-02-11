@@ -81,11 +81,12 @@ export const Stores = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div id="stores-management-container" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold tracking-tight">Store Management</h1>
-                <div className="flex bg-secondary/30 rounded-lg p-1 border border-border">
+                <h1 id="stores-title" className="text-3xl font-bold tracking-tight">Store Management</h1>
+                <div id="filter-controls" className="flex bg-secondary/30 rounded-lg p-1 border border-border">
                     <button
+                        id="btn-toggle-filters"
                         onClick={() => setIsFilterVisible(!isFilterVisible)}
                         className={clsx(
                             "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
@@ -96,6 +97,7 @@ export const Stores = () => {
                     </button>
                     {(Object.values(filters).some(v => v !== '')) && (
                         <button
+                            id="btn-reset-filters"
                             onClick={clearFilters}
                             className="px-3 py-1.5 text-xs font-medium text-red-500 hover:text-red-400 transition-colors"
                         >
@@ -106,13 +108,14 @@ export const Stores = () => {
             </div>
 
             {error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
+                <div id="stores-error-alert" className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
                     <AlertCircle className="text-red-500 mt-0.5" size={20} />
                     <div className="flex-1">
                         <h3 className="font-semibold text-red-700">Sync Failed</h3>
                         <p className="text-sm text-red-600 mt-1">{error}</p>
                     </div>
                     <button
+                        id="btn-dismiss-error"
                         onClick={() => setError(null)}
                         className="text-red-500 hover:text-red-700"
                     >
@@ -121,14 +124,14 @@ export const Stores = () => {
                 </div>
             )}
 
-            <div className="bg-card border border-border rounded-xl shadow-sm overflow-x-auto">
+            <div id="stores-table-container" className="bg-card border border-border rounded-xl shadow-sm overflow-x-auto">
                 <div className="relative">
                     {isLoading && stores.length > 0 && (
-                        <div className="absolute inset-0 bg-background/40 flex items-center justify-center z-10 backdrop-blur-[1px]">
+                        <div id="stores-loading-overlay" className="absolute inset-0 bg-background/40 flex items-center justify-center z-10 backdrop-blur-[1px]">
                              <RefreshCw size={24} className="text-primary animate-spin" />
                         </div>
                     )}
-                    <table className="w-full min-w-max text-sm text-left">
+                    <table id="stores-main-table" className="w-full min-w-max text-sm text-left">
                         <thead className="bg-secondary/50 text-muted-foreground font-medium border-b border-border">
                             <tr>
                                 <th className="px-4 py-4 min-w-[150px]">
@@ -136,6 +139,7 @@ export const Stores = () => {
                                         <span>Store Name</span>
                                         {isFilterVisible && (
                                             <input
+                                                id="filter-store-name"
                                                 type="text"
                                                 name="name"
                                                 value={filters.name}
@@ -152,6 +156,7 @@ export const Stores = () => {
                                         <span>URL</span>
                                         {isFilterVisible && (
                                             <input
+                                                id="filter-store-url"
                                                 type="text"
                                                 name="url"
                                                 value={filters.url}
@@ -168,6 +173,7 @@ export const Stores = () => {
                                         <span>Theme</span>
                                         {isFilterVisible && (
                                             <input
+                                                id="filter-theme-name"
                                                 type="text"
                                                 name="themeName"
                                                 value={filters.themeName}
@@ -184,6 +190,7 @@ export const Stores = () => {
                                         <span>Ver</span>
                                         {isFilterVisible && (
                                             <input
+                                                id="filter-theme-version"
                                                 type="text"
                                                 name="themeVersion"
                                                 value={filters.themeVersion}
@@ -200,6 +207,7 @@ export const Stores = () => {
                                         <span>Tags</span>
                                         {isFilterVisible && (
                                             <input
+                                                id="filter-tags"
                                                 type="text"
                                                 name="tags"
                                                 value={filters.tags}
@@ -216,6 +224,7 @@ export const Stores = () => {
                                         <span>Status</span>
                                         {isFilterVisible && (
                                             <select
+                                                id="filter-status"
                                                 name="status"
                                                 value={filters.status}
                                                 onChange={(e) => {
@@ -242,8 +251,9 @@ export const Stores = () => {
                                     <div className="flex flex-col gap-2">
                                         <span>Reference Period</span>
                                         {isFilterVisible && (
-                                            <div className="flex gap-1 items-center h-[26px]">
+                                            <div id="filter-date-range" className="flex gap-1 items-center h-[26px]">
                                                 <input
+                                                    id="filter-start-date"
                                                     type="date"
                                                     name="startDate"
                                                     value={filters.startDate}
@@ -252,6 +262,7 @@ export const Stores = () => {
                                                 />
                                                 <span className="text-[10px]">to</span>
                                                 <input
+                                                    id="filter-end-date"
                                                     type="date"
                                                     name="endDate"
                                                     value={filters.endDate}
@@ -270,9 +281,9 @@ export const Stores = () => {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border">
+                        <tbody id="stores-tbody" className="divide-y divide-border">
                             {stores.length === 0 ? (
-                                <tr>
+                                <tr id="stores-empty-row">
                                     <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground">
                                         {Object.values(filters).some(v => v !== '') 
                                             ? "No stores match your search criteria." 
@@ -281,24 +292,24 @@ export const Stores = () => {
                                 </tr>
                             ) : (
                                 stores.map((store) => (
-                                    <tr key={store.id} className="hover:bg-secondary/20 transition-colors">
-                                        <td className="px-4 py-4 font-medium whitespace-nowrap">{store.name}</td>
-                                        <td className="px-4 py-4 text-muted-foreground whitespace-nowrap">{store.url}</td>
-                                        <td className="px-4 py-4 whitespace-nowrap">
+                                    <tr id={`store-row-${store.id}`} key={store.id} className="hover:bg-secondary/20 transition-colors">
+                                        <td id={`store-name-${store.id}`} className="px-4 py-4 font-medium whitespace-nowrap">{store.name}</td>
+                                        <td id={`store-url-${store.id}`} className="px-4 py-4 text-muted-foreground whitespace-nowrap">{store.url}</td>
+                                        <td id={`store-theme-${store.id}`} className="px-4 py-4 whitespace-nowrap">
                                             {store.themeName ? (
                                                 <span className="text-sm font-medium text-primary/80">{store.themeName}</span>
                                             ) : (
                                                 <span className="text-muted-foreground text-xs italic">-</span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-4 whitespace-nowrap">
+                                        <td id={`store-version-${store.id}`} className="px-4 py-4 whitespace-nowrap">
                                             {store.themeVersion ? (
                                                 <span className="bg-secondary px-2 py-0.5 rounded text-[11px] font-mono">v{store.themeVersion}</span>
                                             ) : (
                                                 <span className="text-muted-foreground text-xs italic">-</span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-4">
+                                        <td id={`store-tags-${store.id}`} className="px-4 py-4">
                                             <div className="flex flex-wrap gap-1">
                                                 {store.tags && store.tags.length > 0 ? (
                                                     store.tags.map(tag => (
@@ -311,7 +322,7 @@ export const Stores = () => {
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-4 whitespace-nowrap">
+                                        <td id={`store-status-${store.id}`} className="px-4 py-4 whitespace-nowrap">
                                             <div 
                                                 className="flex items-center gap-2 group relative cursor-help"
                                                 title={store.lastSyncAt ? `Last Sync: ${new Date(store.lastSyncAt).toLocaleString()}` : 'Never synced'}
@@ -332,7 +343,7 @@ export const Stores = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-4 whitespace-nowrap">
+                                        <td id={`store-date-picker-${store.id}`} className="px-4 py-4 whitespace-nowrap">
                                             <DateRangePicker
                                                 value={{
                                                     start: store.startDate ? new Date(store.startDate).toISOString().split('T')[0] : null,
@@ -345,9 +356,10 @@ export const Stores = () => {
                                                 })}
                                             />
                                         </td>
-                                        <td className="px-4 py-4 text-right">
+                                        <td id={`store-actions-${store.id}`} className="px-4 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
+                                                    id={`btn-retry-sync-${store.id}`}
                                                     onClick={() => handleRetry(store.id)}
                                                     className="p-2 hover:bg-blue-500/10 text-blue-600 rounded-md transition-colors"
                                                     title="Retry Sync"
@@ -355,6 +367,7 @@ export const Stores = () => {
                                                     <RefreshCw size={18} />
                                                 </button>
                                                 <button
+                                                    id={`btn-edit-store-${store.id}`}
                                                     onClick={() => setEditingStore(store)}
                                                     className="p-2 hover:bg-yellow-500/10 text-yellow-600 rounded-md transition-colors"
                                                     title="Edit Store"
@@ -362,6 +375,7 @@ export const Stores = () => {
                                                     <Edit size={18} />
                                                 </button>
                                                 <button
+                                                    id={`btn-delete-store-${store.id}`}
                                                     onClick={() => handleDelete(store.id)}
                                                     className="p-2 hover:bg-red-500/10 text-red-600 rounded-md transition-colors"
                                                     title="Delete Store"

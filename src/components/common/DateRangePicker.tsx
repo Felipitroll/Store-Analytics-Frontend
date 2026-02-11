@@ -107,9 +107,10 @@ export const DateRangePicker = ({ value, onChange, placeholder = "Select dates" 
     };
 
     return (
-        <div className="relative" ref={popoverRef}>
+        <div id="date-range-picker-container" className="relative" ref={popoverRef}>
             {/* Trigger Button */}
             <button
+                id="btn-date-range-trigger"
                 onClick={() => {
                     if (!isOpen) {
                         setSelectedRange(undefined);
@@ -120,12 +121,13 @@ export const DateRangePicker = ({ value, onChange, placeholder = "Select dates" 
                 className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg hover:bg-secondary/50 transition-colors text-sm font-medium"
             >
                 <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span>{formatDateRange()}</span>
+                <span id="date-range-value-text">{formatDateRange()}</span>
             </button>
 
             {/* Popover */}
             {isOpen && popoverPos && (
                 <div
+                    id="date-range-popover"
                     className="fixed z-50 bg-[hsl(217.2,32.6%,25%)] border border-border rounded-xl shadow-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200"
                     style={{ top: popoverPos.top, right: popoverPos.right }}
                 >

@@ -39,29 +39,30 @@ export const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
-            <div className="w-full max-w-md space-y-8 bg-card p-8 rounded-2xl border border-border shadow-2xl">
-                <div className="text-center space-y-2">
+        <div id="login-page" className="min-h-screen flex items-center justify-center bg-background p-4">
+            <div id="login-card" className="w-full max-w-md space-y-8 bg-card p-8 rounded-2xl border border-border shadow-2xl">
+                <div id="login-header" className="text-center space-y-2">
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-4">
                         <Lock size={24} />
                     </div>
-                    <h2 className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h2>
-                    <p className="text-muted-foreground">Sign in to access your analytics dashboard</p>
+                    <h2 id="login-title" className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h2>
+                    <p id="login-subtitle" className="text-muted-foreground">Sign in to access your analytics dashboard</p>
                 </div>
 
-                <form className="space-y-6" onSubmit={handleSubmit}>
+                <form id="login-form" className="space-y-6" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg text-center">
+                        <div id="login-error" className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg text-center">
                             {error}
                         </div>
                     )}
 
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground">Email</label>
+                            <label id="label-email" className="text-sm font-medium text-foreground">Email</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                                 <input
+                                    id="input-email"
                                     type="email"
                                     required
                                     value={email}
@@ -73,10 +74,11 @@ export const Login = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground">Password</label>
+                            <label id="label-password" className="text-sm font-medium text-foreground">Password</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                                 <input
+                                    id="input-password"
                                     type="password"
                                     required
                                     value={password}
@@ -89,12 +91,13 @@ export const Login = () => {
                     </div>
 
                     <button
+                        id="btn-login-submit"
                         type="submit"
                         disabled={isLoading}
                         className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div id="login-loader" className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
                             <>
                                 Sign in

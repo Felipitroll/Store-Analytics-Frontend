@@ -50,10 +50,11 @@ export const StoreSelector = () => {
     };
 
     return (
-        <div className="flex items-center gap-3 bg-card border border-border rounded-lg px-3 py-2 shadow-sm">
+        <div id="store-selector-container" className="flex items-center gap-3 bg-card border border-border rounded-lg px-3 py-2 shadow-sm">
             <div className="flex flex-col">
-                <label className="text-xs text-muted-foreground font-medium mb-0.5">Current Store</label>
+                <label id="store-selector-label" className="text-xs text-muted-foreground font-medium mb-0.5">Current Store</label>
                 <select
+                    id="select-active-store"
                     value={selectedStore?.id || ''}
                     onChange={(e) => selectStore(e.target.value)}
                     className="bg-transparent font-semibold text-sm focus:outline-none cursor-pointer min-w-[150px] text-foreground [&>option]:bg-card [&>option]:text-foreground"
@@ -67,8 +68,8 @@ export const StoreSelector = () => {
             </div>
 
             {selectedStore && (
-                <div className="flex items-center gap-2">
-                    <div className={clsx(
+                <div id="selected-store-status-container" className="flex items-center gap-2">
+                    <div id={`store-status-badge-${selectedStore.id}`} className={clsx(
                         "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border whitespace-nowrap",
                         selectedStore.syncStatus === 'COMPLETED' && "bg-green-500/10 border-green-500/20 text-green-700",
                         selectedStore.syncStatus === 'SYNCING' && "bg-blue-500/10 border-blue-500/20 text-blue-700",
@@ -76,11 +77,12 @@ export const StoreSelector = () => {
                         selectedStore.syncStatus === 'PENDING' && "bg-gray-500/10 border-gray-500/20 text-gray-700",
                     )}>
                         {getStatusIcon(selectedStore.syncStatus)}
-                        <span>{getStatusText(selectedStore.syncStatus)}</span>
+                        <span id="selected-store-status-text">{getStatusText(selectedStore.syncStatus)}</span>
                     </div>
 
                     {selectedStore.syncStatus !== 'SYNCING' && (
                         <button
+                            id="btn-force-resync"
                             onClick={handleManualSync}
                             className="p-1 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-all"
                             title="Force full re-sync (fixes missing product data)"

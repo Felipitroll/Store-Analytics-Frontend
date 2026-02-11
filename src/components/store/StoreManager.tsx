@@ -70,19 +70,20 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-card border border-border w-full max-w-md rounded-xl shadow-2xl animate-in zoom-in-95 duration-200">
+        <div id="store-manager-overlay" className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div id="store-manager-modal" className="bg-card border border-border w-full max-w-md rounded-xl shadow-2xl animate-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between p-6 border-b border-border">
-                    <h2 className="text-xl font-semibold">Add New Store</h2>
-                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <h2 id="store-manager-title" className="text-xl font-semibold">Add New Store</h2>
+                    <button id="btn-close-store-manager" onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
                         <X size={20} />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form id="store-manager-form" onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Store Name (Optional)</label>
+                        <label id="label-new-store-name" className="text-sm font-medium">Store Name (Optional)</label>
                         <input
+                            id="input-new-store-name"
                             type="text"
                             className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
                             placeholder="My Awesome Store"
@@ -92,8 +93,9 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Shopify URL</label>
+                        <label id="label-new-store-url" className="text-sm font-medium">Shopify URL</label>
                         <input
+                            id="input-new-store-url"
                             type="text"
                             required
                             className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -104,37 +106,40 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Access Token (Optional)</label>
+                        <label id="label-new-store-token" className="text-sm font-medium">Access Token (Optional)</label>
                         <input
+                            id="input-new-store-token"
                             type="password"
                             className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
                             placeholder="shpat_..."
                             value={accessToken}
                             onChange={(e) => setAccessToken(e.target.value)}
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p id="hint-new-store-token" className="text-xs text-muted-foreground">
                             Note: If provided, data sync will start automatically.
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Tags (Optional)</label>
+                        <label id="label-new-store-tags" className="text-sm font-medium">Tags (Optional)</label>
                         <input
+                            id="input-new-store-tags"
                             type="text"
                             className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
                             placeholder="Accesorios Auto, Comida de animales"
                             value={tags}
                             onChange={(e) => setTags(e.target.value)}
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p id="hint-new-store-tags" className="text-xs text-muted-foreground">
                             Separate tags with commas.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Reference Start Date</label>
+                            <label id="label-new-store-start" className="text-sm font-medium">Reference Start Date</label>
                             <input
+                                id="input-new-store-start"
                                 type="date"
                                 required
                                 className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -143,8 +148,9 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Reference End Date</label>
+                            <label id="label-new-store-end" className="text-sm font-medium">Reference End Date</label>
                             <input
+                                id="input-new-store-end"
                                 type="date"
                                 required
                                 className="w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -156,6 +162,7 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
 
                     <div className="pt-4 flex justify-end gap-3">
                         <button
+                            id="btn-cancel-new-store"
                             type="button"
                             onClick={onClose}
                             className="px-4 py-2 rounded-md hover:bg-secondary transition-colors text-sm font-medium"
@@ -163,11 +170,12 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
                             Cancel
                         </button>
                         <button
+                            id="btn-submit-new-store"
                             type="submit"
                             disabled={loading}
                             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm font-medium flex items-center gap-2"
                         >
-                            {loading && <Loader2 size={16} className="animate-spin" />}
+                            {loading && <Loader2 id="loader-new-store" size={16} className="animate-spin" />}
                             Connect Store
                         </button>
                     </div>
