@@ -74,7 +74,8 @@ export const Analytics = () => {
                 });
 
                 // Fetch analytics data
-                const response = await fetch(`http://localhost:3000/analytics/${selectedStore.id}?${queryParams}`);
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+                const response = await fetch(`${apiUrl}/analytics/${selectedStore.id}?${queryParams}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch analytics data');
                 }

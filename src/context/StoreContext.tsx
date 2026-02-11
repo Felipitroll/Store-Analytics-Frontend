@@ -21,7 +21,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const fetchStores = useCallback(async (filters?: Record<string, string>) => {
         try {
-            let url = 'http://localhost:3000/stores';
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            let url = `${apiUrl}/stores`;
             if (filters && Object.keys(filters).length > 0) {
                 const queryParams = new URLSearchParams();
                 Object.entries(filters).forEach(([key, value]) => {
@@ -71,7 +72,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const deleteStore = async (id: string) => {
         try {
-            await fetch(`http://localhost:3000/stores/${id}`, { method: 'DELETE' });
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            await fetch(`${apiUrl}/stores/${id}`, { method: 'DELETE' });
             if (selectedStore?.id === id) {
                 setSelectedStore(null);
             }
@@ -84,7 +86,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const retrySync = async (id: string, force: boolean = false) => {
         try {
-            const response = await fetch(`http://localhost:3000/stores/${id}/sync${force ? '?force=true' : ''}`, { method: 'POST' });
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            const response = await fetch(`${apiUrl}/stores/${id}/sync${force ? '?force=true' : ''}`, { method: 'POST' });
             const data = await response.json();
 
             if (!data.success) {
@@ -100,7 +103,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const updateStore = async (id: string, data: Partial<Store> & { accessToken?: string }) => {
         try {
-            const response = await fetch(`http://localhost:3000/stores/${id}`, {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            const response = await fetch(`${apiUrl}/stores/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

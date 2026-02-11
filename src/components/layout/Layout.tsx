@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Settings, Plus, LogOut, Calendar } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Zap, Settings, Plus, LogOut, Calendar } from 'lucide-react';
 import { clsx } from 'clsx';
 import { StoreManager } from '../store/StoreManager';
 import { StoreSelector } from '../store/StoreSelector';
@@ -72,6 +72,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                             {/* <SidebarItem icon={ShoppingBag} label="Products" to="/products" active={location.pathname === '/products'} /> */}
                             {/* <SidebarItem icon={Users} label="Customers" to="/customers" active={location.pathname === '/customers'} /> */}
                             <SidebarItem icon={BarChart3} label="Analytics" to="/analytics" active={location.pathname === '/analytics'} />
+                            <SidebarItem icon={Zap} label="Quick View" to="/quick-view" active={location.pathname === '/quick-view'} />
                         </nav>
                     </div>
 

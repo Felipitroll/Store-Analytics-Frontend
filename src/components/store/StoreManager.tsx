@@ -29,7 +29,8 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
             // Process tags
             const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
 
-            const response = await fetch('http://localhost:3000/stores', {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            const response = await fetch(`${apiUrl}/stores`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
