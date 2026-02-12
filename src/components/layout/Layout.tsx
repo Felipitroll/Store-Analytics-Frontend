@@ -8,6 +8,7 @@ import { DateRangePicker } from '../common/DateRangePicker';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useStore } from '../../context/StoreContext';
+import { useSettings } from '../../context/SettingsContext';
 
 const SidebarItem = ({ icon: Icon, label, to, active }: { icon: any, label: string, to: string, active: boolean }) => (
     <Link
@@ -32,6 +33,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     const { dateRange, setDateRange } = useDateRange();
     const { logout, user } = useAuth();
     const { selectedStore } = useStore();
+    const { settings, updateCurrency } = useSettings();
 
     const handleLogout = () => {
         logout();
@@ -97,6 +99,17 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                             </h2>
                         </div>
                         <div id="header-actions" className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-md bg-card/50">
+                                <span className="text-xs text-muted-foreground font-medium">Currency</span>
+                                <select
+                                    value={settings.currency}
+                                    onChange={(e) => updateCurrency(e.target.value)}
+                                    className="bg-transparent text-sm font-bold focus:outline-none cursor-pointer"
+                                >
+                                    <option value="CLP">CLP</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
                             <button
                                 id="btn-add-store"
                                 onClick={() => setIsStoreManagerOpen(true)}
