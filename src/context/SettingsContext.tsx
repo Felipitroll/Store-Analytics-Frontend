@@ -98,7 +98,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [token, settings.currency]);
 
-    const formatCurrency = useCallback((amount: number) => {
+    const formatCurrency = useCallback((amount: number | string) => {
+        const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+        
         const symbols: Record<string, string> = {
             'CLP': '$',
             'USD': '$',
@@ -113,7 +115,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
             ? { minimumFractionDigits: 0, maximumFractionDigits: 0 }
             : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
 
-        return `${symbol}${amount.toLocaleString(undefined, options)}`;
+        return `${symbol}${numericAmount.toLocaleString(undefined, options)}`;
     }, [settings.currency]);
 
     const value = useMemo(() => ({ 
