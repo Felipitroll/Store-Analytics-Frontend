@@ -94,9 +94,73 @@ const MetricCard = ({ title, value, change, icon: Icon, id, prevValue, currentRa
     );
 };
 
+const SuccessBadge = ({ level, label, mini = false, metrics }: { level: string, label: string, mini?: boolean, metrics?: any }) => {
+    const colors = {
+        alto: 'bg-green-500/10 text-green-500 border-green-500/20',
+        medio: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+        leve: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+        negativo: 'bg-red-500/10 text-red-500 border-red-500/20',
+        ninguno: 'bg-muted/50 text-muted-foreground border-border/50',
+    };
+
+    const colorClass = colors[level as keyof typeof colors] || colors.ninguno;
+
+    return (
+        <div className="relative group/badge">
+            <div className={`px-2 py-0.5 rounded-md border text-[9px] font-bold uppercase tracking-wider cursor-help transition-all group-hover/badge:border-primary/50 ${colorClass}`}>
+                <span className="opacity-50 mr-1">{label}</span>
+                {level}
+            </div>
+
+            {/* Detailed Tooltip */}
+            {metrics && (
+                <div className="absolute right-0 bottom-full mb-2 w-64 p-4 bg-popover border border-border rounded-xl shadow-2xl text-[11px] text-popover-foreground invisible group-hover/badge:visible opacity-0 group-hover/badge:opacity-100 transition-all z-50 normal-case font-normal leading-relaxed pointer-events-none">
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                            <span className="font-bold text-primary uppercase tracking-tighter">{label} Analysis</span>
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${colorClass}`}>{level}</span>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Reference Increase:</span>
+                                <span className="font-bold text-foreground">
+                                    {label === 'Fixed' 
+                                        ? `$${metrics.fixedIncrease.toLocaleString()}` 
+                                        : `${metrics.percentageIncrease.toFixed(1)}%`}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center text-[10px]">
+                                <span className="text-muted-foreground">Duration:</span>
+                                <span className="text-foreground font-medium">{metrics.durationInDays} days</span>
+                            </div>
+                        </div>
+
+                        <div className="pt-2 border-t border-border/50 space-y-1 text-[10px]">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground italic">Current Period Rev:</span>
+                                <span className="text-foreground">${metrics.currentRevenue.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground italic">Previous Period Rev:</span>
+                                <span className="text-foreground">${metrics.prevRevenue.toLocaleString()}</span>
+                            </div>
+                        </div>
+
+                        <div className="bg-secondary/30 p-2 rounded text-[9px] text-muted-foreground italic">
+                            Compares current accompaniment duration vs same duration prior to start date.
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export const QuickView = () => {
     const { selectedStore, stores, selectStore } = useStore();
     const [data, setData] = useState<AnalyticsData | null>(null);
+    const [allSuccessStatuses, setAllSuccessStatuses] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [viewDates, setViewDates] = useState({ start: '', end: '' });
@@ -106,11 +170,39 @@ export const QuickView = () => {
     const [quickFilters, setQuickFilters] = useState({
         name: '',
         url: '',
-        tags: ''
+        tags: '',
+        success: ''
     });
 
+    // Fetch all success statuses on mount
+    useEffect(() => {
+        const fetchAllStatuses = async () => {
+            try {
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+                const res = await fetch(`${apiUrl}/analytics/all/success-status`);
+                if (res.ok) {
+                    const statuses = await res.json();
+                    setAllSuccessStatuses(statuses);
+                }
+            } catch (err) {
+                console.error('Error fetching all success statuses:', err);
+            }
+        };
+        fetchAllStatuses();
+    }, []);
+
     const filteredStores = useMemo(() => {
-        return stores.filter(store => {
+        return stores.map(store => {
+            const status = allSuccessStatuses.find(s => s.storeId === store.id);
+            return {
+                ...store,
+                successData: status || null,
+                successLevels: status ? {
+                    fixed: status.fixedLevel,
+                    percentage: status.percentageLevel
+                } : null
+            };
+        }).filter(store => {
             // Multiple names logic (OR search)
             let nameMatch = true;
             if (quickFilters.name.trim() !== '') {
@@ -136,10 +228,19 @@ export const QuickView = () => {
                     store.tags?.some(storeTag => storeTag.toLowerCase().includes(searchTag))
                 );
             }
+
+            // Success filter logic
+            let successMatch = true;
+            if (quickFilters.success !== '') {
+                const filter = quickFilters.success.toLowerCase();
+                const fixed = store.successLevels?.fixed?.toLowerCase() || 'ninguno';
+                const percentage = store.successLevels?.percentage?.toLowerCase() || 'ninguno';
+                successMatch = fixed.includes(filter) || percentage.includes(filter);
+            }
             
-            return nameMatch && urlMatch && tagsMatch;
+            return nameMatch && urlMatch && tagsMatch && successMatch;
         });
-    }, [stores, quickFilters]);
+    }, [stores, quickFilters, allSuccessStatuses]);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -387,10 +488,23 @@ export const QuickView = () => {
                                         />
                                     </div>
                                 </th>
+                                <th className="px-6 py-3 min-w-[150px]">
+                                    <div className="flex flex-col gap-2">
+                                        <span>Success Status</span>
+                                        <input
+                                            type="text"
+                                            name="success"
+                                            value={quickFilters.success}
+                                            onChange={handleFilterChange}
+                                            placeholder="Ex: Alto, Medio..."
+                                            className="w-full px-3 py-1.5 bg-[#0d1117] border border-border/50 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-muted-foreground/30"
+                                        />
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="quickview-stores-tbody" className="divide-y divide-border">
-                            {filteredStores.map((store) => (
+                            {filteredStores.map((store: any) => (
                                 <tr 
                                     id={`quickview-store-row-${store.id}`}
                                     key={store.id} 
@@ -404,18 +518,30 @@ export const QuickView = () => {
                                     <td className="px-6 py-4 text-muted-foreground">{store.url}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-wrap gap-1">
-                                            {store.tags?.map((tag, i) => (
+                                            {store.tags?.map((tag: string, i: number) => (
                                                 <span key={i} className="px-2 py-0.5 bg-secondary text-secondary-foreground rounded text-[10px] font-medium">
                                                     {tag}
                                                 </span>
                                             ))}
                                         </div>
                                     </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col gap-1.5">
+                                            {store.successLevels ? (
+                                                <>
+                                                    <SuccessBadge level={store.successLevels.fixed} label="Fixed" metrics={store.successData?.metrics} />
+                                                    <SuccessBadge level={store.successLevels.percentage} label="Growth" metrics={store.successData?.metrics} />
+                                                </>
+                                            ) : (
+                                                <span className="text-[10px] text-muted-foreground italic">No data</span>
+                                            )}
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                             {filteredStores.length === 0 && (
                                 <tr id="quickview-no-stores-row">
-                                    <td colSpan={3} className="px-6 py-12 text-center text-muted-foreground italic">
+                                    <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground italic">
                                         <div className="flex flex-col items-center gap-2">
                                             <Search size={24} className="opacity-10" />
                                             <span>No stores found matching your filters.</span>

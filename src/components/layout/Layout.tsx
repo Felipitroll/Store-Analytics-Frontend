@@ -16,12 +16,12 @@ const SidebarItem = ({ icon: Icon, label, to, active }: { icon: any, label: stri
         className={clsx(
             "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
             active
-                ? "bg-[#FF0057] text-white shadow-lg shadow-[#FF0057]/20"
+                ? "bg-[#FF0057] text-white shadow-lg shadow-[#FF0057]/20 scale-[1.02]"
                 : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
         )}
     >
-        <Icon size={20} className={clsx("transition-colors", active ? "text-white" : "group-hover:text-foreground")} />
-        <span className="font-semibold">{label}</span>
+        <Icon size={18} className={clsx("transition-colors", active ? "text-white" : "group-hover:text-foreground")} />
+        <span className="font-bold tracking-tight text-sm">{label}</span>
     </Link>
 );
 
@@ -59,13 +59,16 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             <StoreManager isOpen={isStoreManagerOpen} onClose={() => setIsStoreManagerOpen(false)} />
 
                 {/* Sidebar */}
-                <aside id="sidebar-container" className="w-56 border-r border-border bg-card/50 backdrop-blur-xl flex flex-col">
+                <aside id="sidebar-container" className="w-60 border-r border-border bg-card/50 backdrop-blur-xl flex flex-col">
                     <div className="p-6">
-                        <div id="sidebar-logo" className="flex items-center gap-2.5 mb-8">
-                            <div className="w-8 h-8 bg-[#FF0057] rounded-sm flex items-center justify-center shrink-0 shadow-lg shadow-[#FF0057]/20">
-                                <span className="text-white font-black text-xl mb-0.5">H</span>
+                        <div id="sidebar-logo" className="flex items-center gap-3 mb-10">
+                            <div className="w-10 h-10 bg-[#FF0057] rounded-xl flex items-center justify-center shrink-0 shadow-xl shadow-[#FF0057]/30 rotate-3 group-hover:rotate-0 transition-transform">
+                                <span className="text-white font-black text-2xl mb-0.5 select-none">H</span>
                             </div>
-                            <h1 className="text-xl font-black tracking-tighter text-foreground">Haciéndola</h1>
+                            <div className="flex flex-col">
+                                <h1 className="text-xl font-black tracking-tighter text-foreground leading-none">Haciéndola</h1>
+                                <span className="text-[10px] font-bold text-[#FF0057] tracking-[0.2em] uppercase mt-1">Analytics</span>
+                            </div>
                         </div>
 
                         <nav id="sidebar-nav-main" className="space-y-1">
