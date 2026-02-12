@@ -192,6 +192,8 @@ export const QuickView = () => {
     };
 
     useEffect(() => {
+        let isMounted = true;
+        
         const fetchAnalytics = async () => {
             if (!selectedStore) return;
 
@@ -211,7 +213,9 @@ export const QuickView = () => {
                     endDate = today.toISOString().split('T')[0];
                 }
 
-                setViewDates({ start: startDate, end: endDate });
+                if (isMounted) {
+                    setViewDates({ start: startDate, end: endDate });
+                }
 
                 const queryParams = new URLSearchParams({
                     startDate: startDate,
@@ -233,47 +237,57 @@ export const QuickView = () => {
                 const result = await analyticsRes.json();
                 const successResult = successRes.ok ? await successRes.json() : null;
 
-                setData(result);
-                setSelectedStoreSuccessStatus(successResult);
+                if (isMounted) {
+                    setData(result);
+                    setSelectedStoreSuccessStatus(successResult);
 
-                if (result.comparison?.range) {
-                    setCompDates({
-                        start: result.comparison.range.start,
-                        end: result.comparison.range.end
+                    if (result.comparison?.range) {
+                        setCompDates({
+                            start: result.comparison.range.start,
+                            end: result.comparison.range.end
+                        });
+                    }
+
+                    // Verification Debug Logs
+                    console.log('--- Quick View Verification ---');
+                    console.log(`Store: ${selectedStore.name}`);
+                    console.log(`Reference Period Calculated: ${startDate} to ${endDate}`);
+                    console.log('Metrics (Current):', {
+                        totalRevenue: result.totalRevenue,
+                        totalOrders: result.totalOrders,
+                        averageOrderValue: result.averageOrderValue,
+                        totalSessions: result.totalSessions,
+                        conversionRate: `${result.conversionRate}%`
                     });
-                }
 
-                // Verification Debug Logs
-                console.log('--- Quick View Verification ---');
-                console.log(`Store: ${selectedStore.name}`);
-                console.log(`Reference Period Calculated: ${startDate} to ${endDate}`);
-                console.log('Metrics (Current):', {
-                    totalRevenue: result.totalRevenue,
-                    totalOrders: result.totalOrders,
-                    averageOrderValue: result.averageOrderValue,
-                    totalSessions: result.totalSessions,
-                    conversionRate: `${result.conversionRate}%`
-                });
-
-                if (result.comparison && result.comparison.values) {
-                    console.log(`Reference Period Previous: ${result.comparison.range?.start} to ${result.comparison.range?.end}`);
-                    console.log('Metrics (Previous):', {
-                        totalRevenue: result.comparison.values.totalRevenue,
-                        totalOrders: result.comparison.values.totalOrders,
-                        averageOrderValue: result.comparison.values.averageOrderValue,
-                        totalSessions: result.comparison.values.totalSessions,
-                        conversionRate: `${result.comparison.values.conversionRate}%`
-                    });
+                    if (result.comparison && result.comparison.values) {
+                        console.log(`Reference Period Previous: ${result.comparison.range?.start} to ${result.comparison.range?.end}`);
+                        console.log('Metrics (Previous):', {
+                            totalRevenue: result.comparison.values.totalRevenue,
+                            totalOrders: result.comparison.values.totalOrders,
+                            averageOrderValue: result.comparison.values.averageOrderValue,
+                            totalSessions: result.comparison.values.totalSessions,
+                            conversionRate: `${result.comparison.values.conversionRate}%`
+                        });
+                    }
+                    console.log('-------------------------------');
                 }
-                console.log('-------------------------------');
             } catch (err) {
-                console.error('Error fetching analytics:', err);
+                if (isMounted) {
+                    console.error('Error fetching analytics:', err);
+                }
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchAnalytics();
+
+        return () => {
+            isMounted = false;
+        };
     }, [selectedStore]);
 
     if (!selectedStore) {

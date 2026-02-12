@@ -101,6 +101,8 @@ export const Analytics = () => {
     };
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchAnalytics = async () => {
             if (!selectedStore) return;
 
@@ -128,18 +130,28 @@ export const Analytics = () => {
                 const analyticsResult = await analyticsRes.json();
                 const successResult = successRes.ok ? await successRes.json() : null;
 
-                setData(analyticsResult);
-                setSuccessStatus(successResult);
+                if (isMounted) {
+                    setData(analyticsResult);
+                    setSuccessStatus(successResult);
+                }
 
             } catch (err) {
-                console.error('Error fetching analytics:', err);
-                setError('Failed to load analytics data');
+                if (isMounted) {
+                    console.error('Error fetching analytics:', err);
+                    setError('Failed to load analytics data');
+                }
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchAnalytics();
+
+        return () => {
+            isMounted = false;
+        };
     }, [selectedStore, dateRange, comparisonPeriod]);
 
     if (isStoreLoading) {
