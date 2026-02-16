@@ -7,7 +7,7 @@ export const translations = {
         "nav.settings": "Settings",
         "nav.logout": "Logout",
         "header.addStore": "Add Store",
-        
+
         // Dashboard Overview
         "overview.title": "Global Overview",
         "overview.totalStores": "Total Stores",
@@ -27,7 +27,7 @@ export const translations = {
         "analytics.noProducts": "No products found",
         "analytics.tryAdjustingDate": "Try selecting a different date range",
         "analytics.lastPeriod": "last period",
-        
+
         // Success Case Banner
         "banner.performanceAnalysis": "Performance Case Analysis",
         "banner.comparing": "Comparing",
@@ -57,7 +57,7 @@ export const translations = {
         "table.performance": "Performance Status",
         "table.noStores": "No stores found",
         "table.tryAdjusting": "Try adjusting your search or filters.",
-        
+
         // Metrics
         "metric.revenue": "Total Revenue",
         "metric.orders": "Total Orders",
@@ -67,7 +67,7 @@ export const translations = {
         "metric.vsLastPeriod": "vs last period",
         "metric.fromComparison": "from comparison",
         "metric.comparedWith": "compared with",
-        
+
         // Status Levels
         "status.fixed": "Fixed",
         "status.growth": "Growth",
@@ -112,7 +112,7 @@ export const translations = {
         "tooltip.filterStatus": "Filter by Status",
         "tooltip.filterStatusDesc": "Filter based on success levels.",
         "tooltip.availableLevels": "Available Levels:",
-        
+
         // Common
         "common.vs": "vs",
         "common.loading": "Loading...",
@@ -129,7 +129,7 @@ export const translations = {
         "nav.settings": "Configuración",
         "nav.logout": "Cerrar Sesión",
         "header.addStore": "Agregar Tienda",
-        
+
         // Dashboard Overview
         "overview.title": "Resumen Global",
         "overview.totalStores": "Total de Tiendas",
@@ -149,7 +149,7 @@ export const translations = {
         "analytics.noProducts": "No se encontraron productos",
         "analytics.tryAdjustingDate": "Intenta seleccionar otro rango de fechas",
         "analytics.lastPeriod": "periodo anterior",
-        
+
         // Success Case Banner
         "banner.performanceAnalysis": "Análisis de Caso de Éxito",
         "banner.comparing": "Comparando",
@@ -179,7 +179,7 @@ export const translations = {
         "table.performance": "Rendimiento",
         "table.noStores": "No se encontraron tiendas",
         "table.tryAdjusting": "Intenta ajustar tu búsqueda o filtros.",
-        
+
         // Metrics
         "metric.revenue": "Ingresos Totales",
         "metric.orders": "Pedidos Totales",
@@ -189,7 +189,7 @@ export const translations = {
         "metric.vsLastPeriod": "vs periodo anterior",
         "metric.fromComparison": "vs comparación",
         "metric.comparedWith": "comparado con",
-        
+
         // Status Levels
         "status.fixed": "Fijo",
         "status.growth": "Crecimiento",
@@ -201,7 +201,7 @@ export const translations = {
         // Analytics Tooltip
         "tooltip.autoCalc.refStart": "Fecha Inicio: Basado en tu selección o configuración.",
         "tooltip.autoCalc.refEnd": "Fecha Fin: Si el fin seleccionado es futuro, se usa hoy para asegurar precisión.",
-        "tooltip.autoCalc.compLogic": "Calcula los días totales en tu Período de Referencia y mira hacia atrás la misma duración terminando el día antes de la Fecha de Inicio.",
+        "tooltip.autoCalc.compLogic": "Calcula los días totales en tu Período de Referencia y ve hacia atrás la misma duración terminando el día antes de la Fecha de Inicio.",
         "tooltip.autoCalc.methodology": "Coincide con la metodología estándar para comparaciones de rendimiento período a período.",
 
         "tooltip.autoCalc.refDesc": "Período de Referencia:",
@@ -222,7 +222,7 @@ export const translations = {
         "period.previous": "Período Anterior",
         "period.autoCalculated": "Calculado Automáticamente",
         "period.calculationLogic": "Lógica de Cálculo",
-                // Tooltips
+        // Tooltips
         "tooltip.searchName": "Buscar por Nombre",
         "tooltip.searchNameDesc": "Busca en todos los nombres de tiendas.",
         "tooltip.filterUrl": "Filtrar por URL",
@@ -232,7 +232,7 @@ export const translations = {
         "tooltip.filterStatus": "Filtrar por Estado",
         "tooltip.filterStatusDesc": "Filtrar basado en niveles de éxito.",
         "tooltip.availableLevels": "Niveles Disponibles:",
-        
+
         // Common
         "common.vs": "vs",
         "common.loading": "Cargando...",
