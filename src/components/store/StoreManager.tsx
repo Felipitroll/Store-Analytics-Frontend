@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
+import { API_URL } from '../../config';
 
 interface StoreManagerProps {
     isOpen: boolean;
@@ -29,8 +30,7 @@ export const StoreManager = ({ isOpen, onClose }: StoreManagerProps) => {
             // Process tags
             const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
 
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-            const response = await fetch(`${apiUrl}/stores`, {
+            const response = await fetch(`${API_URL}/stores`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -4,6 +4,7 @@ import { TrendingUp, ShoppingCart, DollarSign, Activity, Target, Calendar, Info 
 import { useStore } from '../../context/StoreContext';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useSettings } from '../../context/SettingsContext';
+import { API_URL } from '../../config';
 import { StoreSelector } from '../store/StoreSelector';
 import { DateRangePicker } from '../common/DateRangePicker';
 import { SuccessCaseBanner } from './SuccessCaseBanner';
@@ -115,13 +116,10 @@ export const Analytics = () => {
                     comparisonPeriod: comparisonPeriod,
                 });
 
-                // Fetch analytics data
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                
                 // Fetch both in parallel
                 const [analyticsRes, successRes] = await Promise.all([
-                    fetch(`${apiUrl}/analytics/${selectedStore.id}?${queryParams}`),
-                    fetch(`${apiUrl}/analytics/success-status/${selectedStore.id}`)
+                    fetch(`${API_URL}/analytics/${selectedStore.id}?${queryParams}`),
+                    fetch(`${API_URL}/analytics/success-status/${selectedStore.id}`)
                 ]);
 
                 if (!analyticsRes.ok) throw new Error('Failed to fetch analytics data');

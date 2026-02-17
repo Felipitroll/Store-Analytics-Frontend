@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { Store } from '../types/store.types';
+import { API_URL } from '../config';
 
 interface StoreContextType {
     stores: Store[];
@@ -21,8 +22,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const fetchStores = useCallback(async (filters?: Record<string, string>) => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-            let url = `${apiUrl}/stores`;
+            let url = `${API_URL}/stores`;
             if (filters && Object.keys(filters).length > 0) {
                 const queryParams = new URLSearchParams();
                 Object.entries(filters).forEach(([key, value]) => {
@@ -72,8 +72,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const deleteStore = async (id: string) => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-            await fetch(`${apiUrl}/stores/${id}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/stores/${id}`, { method: 'DELETE' });
             if (selectedStore?.id === id) {
                 setSelectedStore(null);
             }
@@ -86,8 +85,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const retrySync = async (id: string, force: boolean = false) => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-            const response = await fetch(`${apiUrl}/stores/${id}/sync${force ? '?force=true' : ''}`, { method: 'POST' });
+            const response = await fetch(`${API_URL}/stores/${id}/sync${force ? '?force=true' : ''}`, { method: 'POST' });
             const data = await response.json();
 
             if (!data.success) {
@@ -103,8 +101,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     const updateStore = async (id: string, data: Partial<Store> & { accessToken?: string }) => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-            const response = await fetch(`${apiUrl}/stores/${id}`, {
+            const response = await fetch(`${API_URL}/stores/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

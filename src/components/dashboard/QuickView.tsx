@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, ShoppingCart, DollarSign, Activity, Target, Calendar, Info, Search } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { useSettings } from '../../context/SettingsContext';
+import { API_URL } from '../../config';
 import { clsx } from 'clsx';
 import { SuccessBadge } from './SuccessBadge';
 import { SuccessCaseBanner } from './SuccessCaseBanner';
@@ -122,8 +123,7 @@ export const QuickView = () => {
     useEffect(() => {
         const fetchAllStatuses = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                const res = await fetch(`${apiUrl}/analytics/all/success-status`);
+                const res = await fetch(`${API_URL}/analytics/all/success-status`);
                 if (res.ok) {
                     const statuses = await res.json();
                     setAllSuccessStatuses(statuses);
@@ -223,12 +223,10 @@ export const QuickView = () => {
                     comparisonPeriod: 'previous_period',
                 });
 
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                
                 // Fetch both analytics and specific success status in parallel
                 const [analyticsRes, successRes] = await Promise.all([
-                    fetch(`${apiUrl}/analytics/${selectedStore.id}?${queryParams}`),
-                    fetch(`${apiUrl}/analytics/success-status/${selectedStore.id}`)
+                    fetch(`${API_URL}/analytics/${selectedStore.id}?${queryParams}`),
+                    fetch(`${API_URL}/analytics/success-status/${selectedStore.id}`)
                 ]);
 
                 if (!analyticsRes.ok) throw new Error('Failed to fetch analytics');

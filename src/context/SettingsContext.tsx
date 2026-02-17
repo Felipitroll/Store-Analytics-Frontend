@@ -2,8 +2,8 @@ import { createContext, useContext, useState, useEffect, type ReactNode, useCall
 import { useAuth } from './AuthContext';
 import type { UserSettings, SettingsContextType } from '../types/settings.types';
 import { translations, type Language, type TranslationKey } from '../i18n/translations';
+import { API_URL } from '../config';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
