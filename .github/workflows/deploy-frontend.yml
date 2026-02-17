@@ -28,7 +28,7 @@ jobs:
       - name: Build Frontend
         env:
           # In Vite, env vars must start with VITE_ to be exposed
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_API_URL: /api
         run: npm run build
 
       - name: Configure AWS credentials
