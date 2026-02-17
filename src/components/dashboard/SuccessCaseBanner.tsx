@@ -30,7 +30,18 @@ interface SuccessCaseBannerProps {
 export const SuccessCaseBanner = ({ successStatus }: SuccessCaseBannerProps) => {
     const { formatCurrency, t } = useSettings();
 
-    if (!successStatus) return null;
+    if (!successStatus || !successStatus.successLevels) return null;
+
+    const fixedLevel = successStatus.successLevels.fixed || 'ninguno';
+    const percentageLevel = successStatus.successLevels.percentage || 'ninguno';
+    const fixedThresholds = successStatus.thresholdsUsed?.fixed || null;
+    const percentageThresholds = successStatus.thresholdsUsed?.percentage || null;
+    const metrics = successStatus.metrics || { fixedIncrease: 0, percentageIncrease: 0 };
+    const periods = successStatus.periods || {
+        reference: { start: '', end: '', revenue: 0 },
+        previous: { start: '', end: '', revenue: 0 }
+    };
+    const durationInDays = successStatus.durationInDays || 0;
 
     return (
         <div id="success-case-banner" className="bg-[#FF0057]/5 border border-[#FF0057]/20 rounded-xl p-6 relative group">
@@ -47,25 +58,25 @@ export const SuccessCaseBanner = ({ successStatus }: SuccessCaseBannerProps) => 
                         <h2 className="text-xl font-bold text-foreground">{t('banner.performanceAnalysis')}</h2>
                         <div className="flex gap-2">
                             <SuccessBadge 
-                                level={successStatus.successLevels.fixed} 
+                                level={fixedLevel} 
                                 label={t('status.fixed')} 
-                                thresholds={successStatus.thresholdsUsed.fixed}
+                                thresholds={fixedThresholds}
                                 type="fixed"
-                                metrics={successStatus.metrics}
+                                metrics={metrics}
                                 showThresholds={true}
                             />
                             <SuccessBadge 
-                                level={successStatus.successLevels.percentage} 
+                                level={percentageLevel} 
                                 label={t('status.growth')} 
-                                thresholds={successStatus.thresholdsUsed.percentage}
+                                thresholds={percentageThresholds}
                                 type="percentage"
-                                metrics={successStatus.metrics}
+                                metrics={metrics}
                                 showThresholds={true}
                             />
                         </div>
                     </div>
                     <p className="text-muted-foreground text-sm">
-                        {t('banner.comparing')} <span className="text-foreground font-semibold">{successStatus.durationInDays}</span> {t('banner.daysOfAccompaniment')}
+                        {t('banner.comparing')} <span className="text-foreground font-semibold">{durationInDays}</span> {t('banner.daysOfAccompaniment')}
                     </p>
                 </div>
 
@@ -74,10 +85,10 @@ export const SuccessCaseBanner = ({ successStatus }: SuccessCaseBannerProps) => 
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#FF0057]">{t('banner.revenueIncrease')}</span>
                         <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-black text-foreground">
-                                {formatCurrency(successStatus.metrics.fixedIncrease)}
+                                {formatCurrency(metrics.fixedIncrease)}
                             </span>
-                            <span className={`text-sm font-bold ${successStatus.metrics.percentageIncrease >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                ({successStatus.metrics.percentageIncrease > 0 ? '+' : ''}{successStatus.metrics.percentageIncrease.toFixed(1)}%)
+                            <span className={`text-sm font-bold ${metrics.percentageIncrease >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                ({metrics.percentageIncrease > 0 ? '+' : ''}{metrics.percentageIncrease.toFixed(1)}%)
                             </span>
                         </div>
                     </div>
@@ -87,14 +98,14 @@ export const SuccessCaseBanner = ({ successStatus }: SuccessCaseBannerProps) => 
                     <div className="space-y-1">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t('banner.refRevenue')}</span>
                         <div className="text-sm font-medium text-foreground">
-                            {formatCurrency(successStatus.periods.reference.revenue)}
+                            {formatCurrency(periods.reference.revenue)}
                         </div>
                     </div>
                     
                     <div className="space-y-1">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t('banner.prevRevenue')}</span>
                         <div className="text-sm font-medium text-foreground">
-                            {formatCurrency(successStatus.periods.previous.revenue)}
+                            {formatCurrency(periods.previous.revenue)}
                         </div>
                     </div>
                 </div>
